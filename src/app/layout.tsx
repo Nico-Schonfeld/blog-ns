@@ -4,6 +4,8 @@ import "./globals.scss";
 import { ThemeProvider } from "@/components/theme-provider";
 import ReduxProvider from "@/redux/provider";
 import { ViewTransitions } from "next-view-transitions";
+import NavbarContainer from "@/components/Navbar/NavbarContainer";
+import FooterContainer from "@/components/Footer/FooterContainer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,11 +26,15 @@ export default function RootLayout({
         <body className={inter.className}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
-            <ReduxProvider>{children}</ReduxProvider>
+            <ReduxProvider>
+              <NavbarContainer />
+              {children}
+              <FooterContainer />
+            </ReduxProvider>
           </ThemeProvider>
         </body>
       </html>
