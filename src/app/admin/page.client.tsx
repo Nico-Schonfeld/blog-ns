@@ -142,7 +142,7 @@ export function AdminComponent() {
                     <DialogHeader>
                       <DialogTitle>Add New Blog Post</DialogTitle>
                       <DialogDescription>
-                        Create a new blog post. Click save when you're done.
+                        Create a new blog post. Click save when you re done.
                       </DialogDescription>
                     </DialogHeader>
                     <form action={handleSave}>
