@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,8 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 const blogsExamples = [
   {
@@ -66,6 +67,14 @@ const blogsExamples = [
       "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque, perferendis? Vel modi, iste ad aperiam asperiores cum, pariatur minima, natus voluptate esse earum consectetur consequatur voluptas corrupti eveniet animi officia veritatis quae quos. Nulla tempore, voluptate sunt porro, ea vero molestiae doloremque expedita eos omnis quaerat asperiores nemo qui velit.",
     createdAt: "09/10/2024",
   },
+  // Add more blog posts to test pagination
+  ...Array.from({ length: 15 }, (_, i) => ({
+    id: i + 6,
+    img: "/assets/photos/cover.webp",
+    title: `Blog post ${i + 6}`,
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    createdAt: "10/10/2024",
+  })),
 ];
 
 const BlogCard = ({ blog }: { blog: any }) => (
@@ -116,11 +125,13 @@ const BlogCardSkeleton = () => (
 );
 
 export default function BlogPage() {
-  const [open, setOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [loading, setLoading] = React.useState(true);
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 6;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -131,7 +142,7 @@ export default function BlogPage() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Simulate data fetching
     const timer = setTimeout(() => {
       setLoading(false);
@@ -144,6 +155,13 @@ export default function BlogPage() {
       blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       blog.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredBlogs.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredBlogs.length / postsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <AnimatePresence>
@@ -246,12 +264,35 @@ export default function BlogPage() {
                         <BlogCardSkeleton />
                       </li>
                     ))
-                : blogsExamples.slice(0, 6).map((blog) => (
+                : currentPosts.map((blog) => (
                     <li key={blog.id}>
                       <BlogCard blog={blog} />
                     </li>
                   ))}
             </ul>
+            <div className="flex justify-center items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
             <p className="text-center text-sm text-muted-foreground">
               Want to see more blogs? Press{" "}
               <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
@@ -290,45 +331,3 @@ export default function BlogPage() {
     </AnimatePresence>
   );
 }
-
-/* "use client";
-
-import React from "react";
-import dynamic from "next/dynamic";
-
-const EditorComponent = dynamic(() => import("@/components/EditorComponent"), {
-  ssr: false,
-});
-import { Button } from "@/components/ui/button";
-import { saveBlog } from "../actions";
-
-const AppComponent = () => {
-  const [editorData, setEditorData] = React.useState<{ [key: string]: any }>(
-    {}
-  );
-
-  const handleEditorChange = (id: number, data: any) => {
-    setEditorData((prevData) => ({
-      ...prevData,
-      [id]: data,
-    }));
-  };
-
-  const handleSave = async () => {
-    for (const [holderId, content] of Object.entries(editorData)) {
-      await saveBlog(holderId, content);
-    }
-  };
-
-  return (
-    <div>
-      <EditorComponent holderId="editorjs1" onChange={handleEditorChange} />
-      <EditorComponent holderId="editorjs2" onChange={handleEditorChange} />
-
-      <Button onClick={handleSave}>Guardar Blogs</Button>
-    </div>
-  );
-};
-
-export default AppComponent;
- */

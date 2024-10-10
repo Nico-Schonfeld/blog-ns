@@ -4,8 +4,6 @@ import "./globals.scss";
 import { ThemeProvider } from "@/components/theme-provider";
 import ReduxProvider from "@/redux/provider";
 import { ViewTransitions } from "next-view-transitions";
-import NavbarContainer from "@/components/Navbar/NavbarContainer";
-import FooterContainer from "@/components/Footer/FooterContainer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,11 +28,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ReduxProvider>
-              <NavbarContainer />
-              {children}
-              <FooterContainer />
-            </ReduxProvider>
+            <ReduxProvider>{children}</ReduxProvider>
           </ThemeProvider>
         </body>
       </html>

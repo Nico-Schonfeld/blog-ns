@@ -16,7 +16,12 @@ export const paymentAction = async (data: {
   if (res.success && !res.error) redirect(res?.preference?.sandbox_init_point!);
 };
 
-export const saveBlog = async (holderId: string | number, content: any) => {
+export const saveBlog = async (
+  title: string,
+  description: string,
+  image: string,
+  content: any
+) => {
   try {
     /*   const blog = await prisma.blog.create({
       data: {
@@ -27,8 +32,10 @@ export const saveBlog = async (holderId: string | number, content: any) => {
 
     /* console.log("Blog saved:", blog); */
 
-    console.log(`Blog id:`, holderId);
-    console.log(`Blog content:`, content);
+    console.log(`Blog title:`, title);
+    console.log(`Blog description:`, description);
+    console.log(`Blog image:`, image);
+    console.log(`Blog content:`, JSON.stringify(content, null, 2));
 
     return;
   } catch (error) {
